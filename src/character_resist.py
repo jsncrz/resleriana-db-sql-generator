@@ -27,5 +27,5 @@ def create_sql_script(stats: list[Character_Resist]):
             f"{stat.slashing},\n\t",
             f"'{stat.create_date}'),\n\t"]))
     sql_file = open("sql/character_resist.sql", encoding="utf-8", mode="w")
-    sql_file.write(insert_string[:insert_string.__len__()-3])
+    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON DUPLICATE KEY UPDATE EXT_ID = EXT_ID')
     sql_file.close()

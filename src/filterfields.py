@@ -7,8 +7,8 @@ from character_stats import Character_Stat, create_sql_script as stat_sql
 from character_resist import Character_Resist, create_sql_script as res_sql
 
 load_dotenv()
-language = 'jp'
 tl_id_preval = 'CHARA'
+language = os.getenv('LANGUAGE')
 DB_FILEPATH= Path(f'{os.getenv("DB_FILEPATH")}/data/master/{language}/character.json')
 def str_format(obj_col):
     if obj_col is None:
@@ -40,6 +40,7 @@ with open(DB_FILEPATH.absolute(), encoding="utf8") as f:
                             ext_id=str_format(id),
                             is_alchemist=str_format(obj['is_alchemist']),
                             initial_rarity=obj['initial_rarity'],
+                            attack_attribute=obj['attack_attributes'][0],
                             release_date=obj['start_at'],
                             name=f'{tl_id_preval}_{id}_N'))
         init_stat = obj['initial_status'];

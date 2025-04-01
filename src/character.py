@@ -5,7 +5,24 @@ from datetime import datetime
 class Character:
     type = 'CHARA'
     
-    def __init__(self, acquisition_text, another_name, description, fullname, ext_id, is_alchemist, name, initial_rarity, release_date):
+    def __get_attribute_string(self, attack_attribute):
+        if attack_attribute == 1:
+            return 'SLASHING'
+        elif attack_attribute == 2:
+            return 'IMPACT'
+        elif attack_attribute == 3:
+            return 'PIERCING'
+        elif attack_attribute == 5:
+            return 'FIRE'
+        elif attack_attribute == 6:
+            return 'ICE'
+        elif attack_attribute == 7:
+            return 'LIGHTNING'
+        elif attack_attribute == 8:
+            return 'WIND'
+            
+    
+    def __init__(self, acquisition_text, another_name, description, fullname, ext_id, is_alchemist, name, initial_rarity, release_date, attack_attribute):
         self.acquisition_text = acquisition_text
         self.another_name = another_name
         self.description = description
@@ -14,14 +31,15 @@ class Character:
         self.is_alchemist = is_alchemist
         self.name = name
         self.initial_rarity = initial_rarity
+        self.attack_attribute = self.__get_attribute_string(attack_attribute)
         self.release_date = datetime.fromisoformat(release_date).strftime('%Y-%m-%d %H:%m:%S')
         self.create_date = time.strftime('%Y-%m-%d %H:%m:%S')
         pass
 
 def create_sql_script(charas: list[Character]):
-    insert_chara_string = 'INSERT INTO `CHARACTER`(`ACQUISITION_TEXT`,`ANOTHER_NAME`,`DESCRIPTION`,`FULL_NAME`, `EXT_ID`,`IS_ALCHEMIST`,`NAME`, `INITIAL_RARITY`, `RELEASE_DATE`, `CREATE_DATE`) VALUES '
+    insert_string = 'INSERT INTO `CHARACTER`(`ACQUISITION_TEXT`,`ANOTHER_NAME`,`DESCRIPTION`,`FULL_NAME`, `EXT_ID`,`IS_ALCHEMIST`,`NAME`, `INITIAL_RARITY`, `ATTACK_ATTRIBUTE`, `RELEASE_DATE`, `CREATE_DATE`) VALUES '
     for chara in charas:
-        insert_chara_string += ("".join([
+        insert_string += ("".join([
             f"('{chara.acquisition_text}',\n\t",
             f"'{chara.another_name}',\n\t",
             f"'{chara.description}',\n\t",
@@ -30,8 +48,9 @@ def create_sql_script(charas: list[Character]):
             f"{chara.is_alchemist},\n\t",
             f"'{chara.name}',\n\t",
             f"{chara.initial_rarity},\n\t",
+            f"'{chara.attack_attribute}',\n\t",
             f"'{chara.release_date}',\n\t",
             f"'{chara.create_date}'),\n\t"]))
     sql_file = open("sql/character.sql", encoding="utf-8", mode="w")
-    sql_file.write(insert_chara_string[:insert_chara_string.__len__()-3])
+    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON DUPLICATE KEY UPDATE EXT_ID = EXT_ID')
     sql_file.close()
