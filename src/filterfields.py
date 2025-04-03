@@ -40,6 +40,7 @@ with open(DB_FILEPATH.absolute(), encoding="utf8") as f:
                             ext_id=str_format(id),
                             is_alchemist=str_format(obj['is_alchemist']),
                             initial_rarity=obj['initial_rarity'],
+                            role=obj['role'],
                             attack_attribute=obj['attack_attributes'][0],
                             release_date=obj['start_at'],
                             name=f'{tl_id_preval}_{id}_N'))

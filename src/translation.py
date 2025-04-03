@@ -10,7 +10,7 @@ class Translation:
     
 def create_sql_script(tls: list[Translation]):
     
-    insert_string = 'INSERT INTO `TRANSLATION`(`ID`,`LANGUAGE`,`TEXT`, `CREATE_DATE`) VALUES '
+    insert_string = 'INSERT INTO `TRANSLATION`(`TL_ID`,`LANGUAGE`,`TEXT`, `CREATE_DATE`) VALUES '
     for tl in tls:
         insert_string += ("".join([
             f"('{tl.id}',\n\t",

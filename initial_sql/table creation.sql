@@ -20,6 +20,7 @@ create table `CHARACTER` (
     `DESCRIPTION` varchar(30),
     ACQUISITION_TEXT varchar(30),
     INITIAL_RARITY tinyint not null,
+    `ROLE` varchar(30),
     ATTACK_ATTRIBUTE varchar(30),
     IS_ALCHEMIST boolean not null,
     RELEASE_DATE TIMESTAMP,
