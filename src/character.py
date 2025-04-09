@@ -58,8 +58,8 @@ def create_sql_script(charas: list[Character]):
             f"{chara.is_alchemist},\n\t",
             f"'{chara.name}',\n\t",
             f"{chara.initial_rarity},\n\t",
-            f"'{chara.role}',\n\t",
             f"'{chara.attack_attribute}',\n\t",
+            f"'{chara.role}',\n\t",
             f"'{chara.release_date}',\n\t",
             f"'{chara.create_date}'),\n\t"]))
     sql_file = open("sql/character.sql", encoding="utf-8", mode="w")
