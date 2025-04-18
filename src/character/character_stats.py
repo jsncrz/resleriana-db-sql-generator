@@ -12,7 +12,7 @@ class Character_Stat:
     speed: int
     create_date = time.strftime('%Y-%m-%d %H:%m:%S')
 
-def create_sql_script(stats: list[Character_Stat]):
+def stat_sql(stats: list[Character_Stat]):
     insert_string = 'INSERT INTO `CHARACTER_STATS`(`EXT_ID`,`ATTACK`,`DEFENSE`,`HP`, `MAGIC`,`MENTAL`,`SPEED`,`CREATE_DATE`) VALUES '
     for stat in stats:
         insert_string += ("".join([

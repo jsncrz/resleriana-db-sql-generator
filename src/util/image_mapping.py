@@ -11,9 +11,9 @@ class Map_To_Image:
     image_path: Image_Path
     item_id: int
 
-def create_generic_image_mapping(DB_FILEPATH):
+def create_generic_image_mapping(db_filepath):
     map_to_images: list[Map_To_Image] = []
-    with open(DB_FILEPATH.absolute(), encoding="utf8") as f:
+    with open(db_filepath.absolute(), encoding="utf8") as f:
         d = json.load(f)
         for obj in d:
             item_id = obj['id']

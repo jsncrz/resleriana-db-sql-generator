@@ -13,7 +13,7 @@ class Character_Resist:
     slashing: int
     create_date = time.strftime('%Y-%m-%d %H:%m:%S')
 
-def create_sql_script(stats: list[Character_Resist]):
+def res_sql(stats: list[Character_Resist]):
     insert_string = 'INSERT INTO `CHARACTER_RESIST`(`EXT_ID`,`FIRE`,`ICE`,`AIR`, `BOLT`,`STRIKE`,`STAB`,`SLASH`,`CREATE_DATE`) VALUES '
     for stat in stats:
         insert_string += ("".join([

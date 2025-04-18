@@ -1,37 +1,12 @@
 import time
 from datetime import datetime
 
+from util.util import get_attribute_string, get_role_string
 
 class Character:
     type = 'CHARA'
     
-    def __get_attribute_string(self, attack_attribute):
-        if attack_attribute == 1:
-            return 'SLASH'
-        elif attack_attribute == 2:
-            return 'STRIKE'
-        elif attack_attribute == 3:
-            return 'STAB'
-        elif attack_attribute == 5:
-            return 'FIRE'
-        elif attack_attribute == 6:
-            return 'ICE'
-        elif attack_attribute == 7:
-            return 'BOLT'
-        elif attack_attribute == 8:
-            return 'AIR'
-    
-    def __get_role_string(self, role):
-        if role == 1:
-            return 'ATTACKER'
-        elif role == 2:
-            return 'BREAKER'
-        elif role == 3:
-            return 'DEFENDER'
-        elif role == 4:
-            return 'SUPPORTER'
-    
-    def __init__(self, acquisition_text, another_name, description, fullname, ext_id, is_alchemist, name, initial_rarity, release_date, attack_attribute, role):
+    def __init__(self, acquisition_text, another_name, description, fullname, ext_id, is_alchemist, name, initial_rarity, max_rarity, release_date, attack_attribute, role):
         self.acquisition_text = acquisition_text
         self.another_name = another_name
         self.description = description
@@ -40,14 +15,15 @@ class Character:
         self.is_alchemist = is_alchemist
         self.name = name
         self.initial_rarity = initial_rarity
-        self.attack_attribute = self.__get_attribute_string(attack_attribute)
-        self.role = self.__get_role_string(role)
+        self.max_rarity = max_rarity
+        self.attack_attribute = get_attribute_string(attack_attribute)
+        self.role = get_role_string(role)
         self.release_date = datetime.fromisoformat(release_date).strftime('%Y-%m-%d %H:%m:%S')
         self.create_date = time.strftime('%Y-%m-%d %H:%m:%S')
         pass
 
-def create_sql_script(charas: list[Character]):
-    insert_string = 'INSERT INTO `CHARACTER`(`ACQUISITION_TEXT`,`ANOTHER_NAME`,`DESCRIPTION`,`FULL_NAME`, `EXT_ID`,`IS_ALCHEMIST`,`NAME`, `INITIAL_RARITY`, `ATTACK_ATTRIBUTE`, `ROLE`, `RELEASE_DATE`, `CREATE_DATE`) VALUES '
+def char_sql(charas: list[Character]):
+    insert_string = 'INSERT INTO `CHARACTER`(`ACQUISITION_TEXT`,`ANOTHER_NAME`,`DESCRIPTION`,`FULL_NAME`, `EXT_ID`,`IS_ALCHEMIST`,`NAME`, `INITIAL_RARITY`, `MAX_RARITY`, `ATTACK_ATTRIBUTE`, `ROLE`, `RELEASE_DATE`, `CREATE_DATE`) VALUES '
     for chara in charas:
         insert_string += ("".join([
             f"('{chara.acquisition_text}',\n\t",
@@ -58,6 +34,7 @@ def create_sql_script(charas: list[Character]):
             f"{chara.is_alchemist},\n\t",
             f"'{chara.name}',\n\t",
             f"{chara.initial_rarity},\n\t",
+            f"{chara.max_rarity},\n\t",
             f"'{chara.attack_attribute}',\n\t",
             f"'{chara.role}',\n\t",
             f"'{chara.release_date}',\n\t",
