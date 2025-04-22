@@ -16,7 +16,6 @@ language = None
 db_filepath = None
 
 def __add_memoria_growths(growths:list):
-    print(language)
     with open(Path(db_filepath + 'memoria_buff_growth.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
         for obj in d:
@@ -90,11 +89,11 @@ def create_memoria_sqls(locale: str):
             __add_memoria_roles(id, memoria_roles, obj['roles'])
             __add_memoria_status(id, memoria_status, obj['status_buffs'])
     f.close()
-    tl_sql(translations, 'memoria_translation')
-    memoria_growth_sql(growths=memoria_growth)
-    memoria_sql(memorias=memorias)
-    memoria_ability_sql(memoria_abilities=memoria_abilities)
-    memoria_attribute_sql(memoria_attributes=memoria_attributes)
-    memoria_role_sql(memoria_roles=memoria_roles)
-    memoria_status_sql(status=memoria_status)
-    append_sql_files(scripts=['memoria_translation', 'memoria_growth', 'memoria', 'memoria_ability', 'memoria_attribute', 'memoria_status', 'memoria_role'], appended_filename='appended_memoria')
+    tl_sql(translations, 'memoria_translation', language)
+    memoria_growth_sql(memoria_growth, language)
+    memoria_sql(memorias, language)
+    memoria_ability_sql(memoria_abilities, language)
+    memoria_attribute_sql(memoria_attributes, language)
+    memoria_role_sql(memoria_roles, language)
+    memoria_status_sql(memoria_status, language)
+    append_sql_files(scripts=['memoria_translation_key','memoria_translation', 'memoria_growth_key','memoria_growth', 'memoria', 'memoria_ability', 'memoria_attribute', 'memoria_status', 'memoria_role'], appended_filename='appended_memoria', language=language)

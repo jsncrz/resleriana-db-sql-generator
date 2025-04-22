@@ -13,8 +13,8 @@ class Character_Resist:
     slashing: int
     create_date = time.strftime('%Y-%m-%d %H:%m:%S')
 
-def res_sql(stats: list[Character_Resist]):
-    insert_string = 'INSERT INTO `CHARACTER_RESIST`(`EXT_ID`,`FIRE`,`ICE`,`AIR`, `BOLT`,`STRIKE`,`STAB`,`SLASH`,`CREATE_DATE`) VALUES '
+def res_sql(stats: list[Character_Resist], language: str):
+    insert_string = 'INSERT INTO character_resist(id,fire,ice,air,bolt,strike,stab,slash,create_date) VALUES '
     for stat in stats:
         insert_string += ("".join([
             f"({stat.ext_id},\n\t",
@@ -26,6 +26,6 @@ def res_sql(stats: list[Character_Resist]):
             f"{stat.piercing},\n\t",
             f"{stat.slashing},\n\t",
             f"'{stat.create_date}'),\n\t"]))
-    sql_file = open("sql/character_resist.sql", encoding="utf-8", mode="w")
-    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON DUPLICATE KEY UPDATE EXT_ID = EXT_ID')
+    sql_file = open(f"sql/{language}/character_resist.sql", encoding="utf-8", mode="w")
+    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON CONFLICT DO NOTHING')
     sql_file.close()

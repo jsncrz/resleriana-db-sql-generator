@@ -21,7 +21,6 @@ def __add_chara_tls(tl_id_preval, translations, obj, id):
     translations.append(Translation(id=f'{tl_id_preval}_{id}_N', language=language, text=str_format(obj['name'])))
     
 def __add_tags_and_tls(translations, tags):
-    print(language)
     with open(Path(db_filepath + 'character_tag.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
         for obj in d:
@@ -92,10 +91,10 @@ def create_character_sqls(locale: str):
                 wind=resistance['wind'],
             ))
     f.close()
-    char_sql(charas)
-    tl_sql(translations, 'chara_translation')
-    stat_sql(stats)
-    res_sql(resists)
-    tag_sql(tags)
-    char_tag_sql(character_tags)
-    append_sql_files(scripts=['chara_translation', 'tag', 'character', 'character_tag', 'character_stat', 'character_resist'], appended_filename='appended_chara')
+    char_sql(charas, language)
+    tl_sql(translations, 'chara_translation', language)
+    stat_sql(stats, language)
+    res_sql(resists, language)
+    tag_sql(tags, language)
+    char_tag_sql(character_tags, language)
+    append_sql_files(scripts=['chara_translation_key','chara_translation', 'tag', 'character', 'character_tag', 'character_stat', 'character_resist'], appended_filename='appended_chara', language=language)

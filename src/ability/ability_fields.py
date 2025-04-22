@@ -36,7 +36,7 @@ def create_ability_sql(locale: str):
                             name=f'{tl_id_preval}_{id}_N'))
             __add_ability_effect(ability_id=id, ability_effects=ability_effects, effect_ids=obj['effects'])
     f.close()
-    tl_sql(translations, 'ability_translation');
-    ability_sql(abilities);
-    ability_effect_sql(ability_effects=ability_effects)
-    append_sql_files(scripts=['ability_translation', 'ability', 'ability_effects'], appended_filename='appended_ability')
+    tl_sql(translations, 'ability_translation', language);
+    ability_sql(abilities, language);
+    ability_effect_sql(ability_effects, language)
+    append_sql_files(scripts=['ability_translation_key','ability_translation', 'ability', 'ability_effects'], appended_filename='appended_ability', language=language)

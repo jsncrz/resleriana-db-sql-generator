@@ -22,8 +22,8 @@ class Character:
         self.create_date = time.strftime('%Y-%m-%d %H:%m:%S')
         pass
 
-def char_sql(charas: list[Character]):
-    insert_string = 'INSERT INTO `CHARACTER`(`ACQUISITION_TEXT`,`ANOTHER_NAME`,`DESCRIPTION`,`FULL_NAME`, `EXT_ID`,`IS_ALCHEMIST`,`NAME`, `INITIAL_RARITY`, `MAX_RARITY`, `ATTACK_ATTRIBUTE`, `ROLE`, `RELEASE_DATE`, `CREATE_DATE`) VALUES '
+def char_sql(charas: list[Character], language: str):
+    insert_string = 'INSERT INTO character(acquisition_text,another_name,character_description,full_name, id,is_alchemist,character_name, initial_rarity, max_rarity, attack_attribute, character_role, release_date, create_date) VALUES '
     for chara in charas:
         insert_string += ("".join([
             f"('{chara.acquisition_text}',\n\t",
@@ -39,6 +39,6 @@ def char_sql(charas: list[Character]):
             f"'{chara.role}',\n\t",
             f"'{chara.release_date}',\n\t",
             f"'{chara.create_date}'),\n\t"]))
-    sql_file = open("sql/character.sql", encoding="utf-8", mode="w")
-    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON DUPLICATE KEY UPDATE EXT_ID = EXT_ID')
+    sql_file = open(f"sql/{language}/character.sql", encoding="utf-8", mode="w")
+    sql_file.write(f'{insert_string[:insert_string.__len__()-3]} ON CONFLICT DO NOTHING')
     sql_file.close()

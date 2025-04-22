@@ -1,224 +1,226 @@
-DROP SCHEMA IF EXISTS `resleriana`;
-CREATE SCHEMA `resleriana` DEFAULT CHARACTER SET utf8mb4 ;
-USE `resleriana`;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO pg_database_owner;
+GRANT ALL ON SCHEMA public TO public;
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+--------------------------------------------- GENERIC TABLE CREATION ------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------- GENERIC TABLE CREATION ------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-
-create table TRANSLATION (
-    TL_ID varchar(50) not null,
-    `LANGUAGE` varchar(2) not null,
-	`TEXT` varchar(2000) not null,
-    PRIMARY KEY (TL_ID, `LANGUAGE`),
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP
+CREATE TABLE translation_keys (
+    id VARCHAR(50) PRIMARY KEY
 );
 
-create table TAG (
-    EXT_ID int not null unique,
-    `NAME` varchar(50) not null,
-    PRIORITY int not null ,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID),
-    FOREIGN KEY (`NAME`) REFERENCES TRANSLATION(TL_ID)
+CREATE TABLE translations (
+    id VARCHAR(50) NOT NULL,
+    lang_code VARCHAR(2) NOT NULL,
+    translated_text VARCHAR(2000) NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    PRIMARY KEY (id, lang_code),
+    FOREIGN KEY (id) REFERENCES translation_keys(id)
 );
 
-create table EFFECT (
-    EXT_ID int not null unique,
-    `DESCRIPTION` varchar(50) not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID),
-    FOREIGN KEY (`DESCRIPTION`) REFERENCES TRANSLATION(TL_ID)
+CREATE TABLE tag (
+    tag_name VARCHAR(50) NOT NULL,
+    priority INT NOT NULL ,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (tag_name) REFERENCES translation_keys(id)
 );
 
-create table ABILITY (
-    EXT_ID int not null unique,
-    `DESCRIPTION` varchar(50) not null,
-    `NAME` varchar(50) not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID),
-    FOREIGN KEY (`NAME`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`DESCRIPTION`) REFERENCES TRANSLATION(TL_ID)
+CREATE TABLE effect (
+    effect_description VARCHAR(50) NOT NULL,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (effect_description) REFERENCES translation_keys(id)
 );
 
-create table ABILITY_EFFECT (
-    ABILITY_ID int not null,
-    EFFECT_ID int not null,
-    `VALUE` int not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (ABILITY_ID) REFERENCES `ABILITY`(EXT_ID),
-    FOREIGN KEY (EFFECT_ID) REFERENCES `EFFECT`(EXT_ID),
-    PRIMARY KEY (ABILITY_ID, EFFECT_ID)
+CREATE TABLE ability (
+    ability_description VARCHAR(50) NOT NULL,
+    ability_name VARCHAR(50) NOT NULL,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (ability_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (ability_description) REFERENCES translation_keys(id)
 );
 
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------- CHARACTER RELATED TABLE CREATION ------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-create table `CHARACTER` (
-    EXT_ID int not null UNIQUE,
-    `NAME` varchar(50),
-    ANOTHER_NAME varchar(50),
-    FULL_NAME varchar(50),
-    `DESCRIPTION` varchar(50),
-    ACQUISITION_TEXT varchar(50),
-    INITIAL_RARITY smallint not null,
-    MAX_RARITY smallint not null,
-    `ROLE` varchar(50),
-    ATTACK_ATTRIBUTE varchar(50),
-    IS_ALCHEMIST boolean not null,
-    RELEASE_DATE TIMESTAMP,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID),
-    FOREIGN KEY (`NAME`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`ANOTHER_NAME`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`FULL_NAME`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`DESCRIPTION`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`ACQUISITION_TEXT`) REFERENCES TRANSLATION(TL_ID)
+CREATE TABLE ability_effect (
+    ability_id INT NOT NULL,
+    effect_id INT NOT NULL,
+    number_value INT NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (ability_id) REFERENCES ability(id),
+    FOREIGN KEY (effect_id) REFERENCES effect(id),
+    PRIMARY KEY (ability_id, effect_id)
 );
 
-create table CHARACTER_STATS (
-    EXT_ID int not null unique,
-    ATTACK smallint not null,
-    DEFENSE smallint not null,
-    HP smallint not null,
-    MAGIC smallint not null,
-    MENTAL smallint not null,
-    SPEED smallint not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (EXT_ID) REFERENCES `CHARACTER`(EXT_ID),
-    INDEX (EXT_ID)
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+--------------------------------------------- CHARACTER TABLE CREATION ----------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+CREATE TABLE character (
+    character_name VARCHAR(50),
+    another_name VARCHAR(50),
+    full_name VARCHAR(50),
+    character_description VARCHAR(50),
+    acquisition_text VARCHAR(50),
+    initial_rarity SMALLINT NOT NULL,
+    max_rarity SMALLINT NOT NULL,
+    character_role VARCHAR(50),
+    attack_attribute VARCHAR(50),
+    is_alchemist boolean NOT NULL,
+    release_date TIMESTAMP,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (character_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (another_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (full_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (character_description) REFERENCES translation_keys(id),
+    FOREIGN KEY (acquisition_text) REFERENCES translation_keys(id)
 );
 
-create table CHARACTER_RESIST (
-    EXT_ID int not null unique,
-    FIRE smallint not null,
-    ICE smallint not null,
-    AIR smallint not null,
-    BOLT smallint not null,
-    STRIKE smallint not null,
-    STAB smallint not null,
-    SLASH smallint not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (EXT_ID) REFERENCES `CHARACTER`(EXT_ID),
-    INDEX (EXT_ID)
+CREATE TABLE character_status (
+    attack SMALLINT NOT NULL,
+    defense SMALLINT NOT NULL,
+    hp SMALLINT NOT NULL,
+    magic SMALLINT NOT NULL,
+    mental SMALLINT NOT NULL,
+    speed SMALLINT NOT NULL,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (id) REFERENCES character(id)
 );
 
-
-create table CHARACTER_TAG (
-    CHARACTER_ID int not null,
-    TAG_ID int not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (CHARACTER_ID) REFERENCES `CHARACTER`(EXT_ID),
-    FOREIGN KEY (TAG_ID) REFERENCES `TAG`(EXT_ID),
-    PRIMARY KEY (CHARACTER_ID, TAG_ID)
+CREATE TABLE character_resist (
+    fire SMALLINT NOT NULL,
+    ice SMALLINT NOT NULL,
+    air SMALLINT NOT NULL,
+    bolt SMALLINT NOT NULL,
+    strike SMALLINT NOT NULL,
+    stab SMALLINT NOT NULL,
+    slash SMALLINT NOT NULL,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (id) REFERENCES character(id)
 );
 
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# --------------------------------------------- MEMORIA RELATED TABLE CREATION ------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------------------------------------------------------------------------
-
-create table MEMORIA_GROWTH (
-    EXT_ID int not null,
-    `LEVEL` smallint not null ,
-    `STAT_VALUE` smallint not null ,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID, `LEVEL`)
+CREATE TABLE character_tag (
+    tag_id INT NOT NULL,
+    character_id INT NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (character_id) REFERENCES character(id),
+    FOREIGN KEY (tag_id) REFERENCES tag(id),
+    PRIMARY KEY (character_id, tag_id)
 );
 
-create table MEMORIA (
-    EXT_ID int not null UNIQUE,
-    `NAME` varchar(50),
-    `DESCRIPTION` varchar(50),
-    RARITY smallint not null,
-    RELEASE_DATE TIMESTAMP,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    PRIMARY KEY (EXT_ID),
-    FOREIGN KEY (`NAME`) REFERENCES TRANSLATION(TL_ID),
-    FOREIGN KEY (`DESCRIPTION`) REFERENCES TRANSLATION(TL_ID)
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------- MEMORIA TABLE CREATION -----------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE memoria_growth_key (
+    id INT NOT NULL PRIMARY KEY
 );
 
-create table MEMORIA_ABILITY (
-    MEMORIA_ID int not null,
-    ABILITY_ID int not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (MEMORIA_ID) REFERENCES `MEMORIA`(EXT_ID),
-    FOREIGN KEY (ABILITY_ID) REFERENCES `ABILITY`(EXT_ID),
-    PRIMARY KEY (MEMORIA_ID, ABILITY_ID)
+CREATE TABLE memoria_growth (
+    id INT NOT NULL,
+    memoria_level SMALLINT NOT NULL,
+    stat_value SMALLINT NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    PRIMARY KEY (id, memoria_level),
+	FOREIGN KEY (id) REFERENCES memoria_growth_key(id)
 );
 
-create table MEMORIA_ATTRIBUTE (
-    MEMORIA_ID int not null,
-    ATTRIBUTE varchar(50) not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (MEMORIA_ID) REFERENCES `MEMORIA`(EXT_ID),
-    PRIMARY KEY (MEMORIA_ID, ATTRIBUTE)
+CREATE TABLE memoria (
+    memoria_name VARCHAR(50),
+    memoria_description VARCHAR(50),
+    rarity SMALLINT NOT NULL,
+    release_date TIMESTAMP,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (memoria_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (memoria_description) REFERENCES translation_keys(id)
 );
 
-create table MEMORIA_ROLE (
-    MEMORIA_ID int not null,
-    `ROLE` varchar(50) not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (MEMORIA_ID) REFERENCES `MEMORIA`(EXT_ID),
-    PRIMARY KEY (MEMORIA_ID, `ROLE`)
+CREATE TABLE memoria_ability (
+    memoria_id INT NOT NULL,
+    ability_id INT NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (memoria_id) REFERENCES memoria(id),
+    FOREIGN KEY (ability_id) REFERENCES ability(id),
+    PRIMARY KEY (memoria_id, ability_id)
 );
 
-create table MEMORIA_STATUS (
-    MEMORIA_ID int not null unique,
-    ATTACK int not null,
-    DEFENSE int not null,
-    HP int not null,
-    MAGIC int not null,
-    MENTAL int not null,
-    SPEED int not null,
-    CREATE_DATE TIMESTAMP not null,
-    UPDATE_DATE TIMESTAMP,
-    DELETE_DATE TIMESTAMP,
-    FOREIGN KEY (MEMORIA_ID) REFERENCES `MEMORIA`(EXT_ID),
-    FOREIGN KEY (ATTACK) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    FOREIGN KEY (DEFENSE) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    FOREIGN KEY (HP) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    FOREIGN KEY (MAGIC) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    FOREIGN KEY (MENTAL) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    FOREIGN KEY (SPEED) REFERENCES `MEMORIA_GROWTH`(EXT_ID),
-    INDEX (MEMORIA_ID)
+CREATE TABLE memoria_attribute (
+    memoria_id INT NOT NULL,
+    memoria_attribute VARCHAR(50) NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (memoria_id) REFERENCES memoria(id),
+    PRIMARY KEY (memoria_id, memoria_attribute)
+);
+
+CREATE TABLE memoria_role (
+    memoria_id INT NOT NULL,
+    memoria_role VARCHAR(50) NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (memoria_id) REFERENCES memoria(id),
+    PRIMARY KEY (memoria_id, memoria_role)
+);
+
+CREATE TABLE memoria_status (
+    memoria_id INT NOT NULL UNIQUE,
+    attack INT NOT NULL,
+    defense INT NOT NULL,
+    hp INT NOT NULL,
+    magic INT NOT NULL,
+    mental INT NOT NULL,
+    speed INT NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (memoria_id) REFERENCES memoria(id),
+    FOREIGN KEY (attack) REFERENCES memoria_growth_key(id),
+    FOREIGN KEY (defense) REFERENCES memoria_growth_key(id),
+    FOREIGN KEY (hp) REFERENCES memoria_growth_key(id),
+    FOREIGN KEY (magic) REFERENCES memoria_growth_key(id),
+    FOREIGN KEY (mental) REFERENCES memoria_growth_key(id),
+    FOREIGN KEY (speed) REFERENCES memoria_growth_key(id),
+    PRIMARY KEY (memoria_id)
 );

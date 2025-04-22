@@ -24,6 +24,6 @@ def create_effect_sql(locale: str):
             translations.append(Translation(id=f'{tl_id_preval}_{id}_D', language=language, text=str_format(obj['description'])))
             effects.append(Effect(ext_id=obj['id'], description=f'{tl_id_preval}_{id}_D'))
     f.close()
-    tl_sql(translations, 'effect_translation');
-    effect_sql(effects);
-    append_sql_files(scripts=['effect_translation', 'effect'], appended_filename='appended_effect')
+    tl_sql(translations, 'effect_translation', language);
+    effect_sql(effects, language);
+    append_sql_files(scripts=['effect_translation_key', 'effect_translation', 'effect'], appended_filename='appended_effect', language=language)

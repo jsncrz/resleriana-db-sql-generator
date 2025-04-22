@@ -1,13 +1,13 @@
-def append_sql_files(scripts:list[str], appended_filename: str):
+def append_sql_files(scripts:list[str], appended_filename: str, language: str):
     sql_script = ''
     sql_scripts = scripts
     for script in sql_scripts:
-        with open(f'sql/{script}.sql', encoding="utf8") as f:
+        with open(f'sql/{language}/{script}.sql', encoding="utf8") as f:
             data = f.read()
         f.close()
         sql_script += '\n'
         sql_script += data + ';'
-    with open (f'sql/{appended_filename}.sql', mode='w', encoding="utf8") as f:
+    with open (f'sql/{language}/appended/{appended_filename}.sql', mode='w', encoding="utf8") as f:
         f.write(sql_script)
     f.close()
     
