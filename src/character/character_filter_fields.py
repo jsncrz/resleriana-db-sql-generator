@@ -1,9 +1,10 @@
 import json, os
 from pathlib import Path
 from dotenv import load_dotenv
+from character.character_skill import Character_Skill, char_skill_sql
 from generic.tags import Tag, tag_sql
 from generic.translation import Translation, tl_sql
-from util.util import append_sql_files, str_format
+from util.util import append_sql_files, get_skill_type, str_format
 from character.character import Character, char_sql
 from character.character_tag import Character_Tag, char_tag_sql
 from character.character_stats import Character_Stat, stat_sql
@@ -34,6 +35,11 @@ def __add_tags_and_tls(translations, tags):
 def __add_character_tags(character_id, character_tags, tag_ids):
     for tag in tag_ids:
         character_tags.append(Character_Tag(character_id=character_id, tag_id=tag))
+            
+def __add_character_skills(character_id: str, character_skills: list, skill_ids: list[list:int]):
+    for index, skills in enumerate(skill_ids):
+        for skill in skills:
+            character_skills.append(Character_Skill(character_id=character_id, skill_id=skill, skill_type=get_skill_type(index)))
 
 def create_character_sqls(locale: str):
     tl_id_preval = 'CHARA'
@@ -47,6 +53,7 @@ def create_character_sqls(locale: str):
     resists:list[Character_Resist] = []
     tags:list[Tag] = []
     character_tags:list[Character_Tag] = []
+    character_skills:list[Character_Tag] = []
     __add_tags_and_tls(translations, tags)
     with open(Path(db_filepath + 'character.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
@@ -69,6 +76,8 @@ def create_character_sqls(locale: str):
                             name=f'{tl_id_preval}_{id}_N'))
             # Add tags objects
             __add_character_tags(id, character_tags, obj['tag_ids'])
+            # Add Character skills
+            __add_character_skills(id, character_skills, [obj['normal1_skill_ids'], obj['normal2_skill_ids'],obj['burst_skill_ids']])
             # Add stats objects
             init_stat = obj['initial_status'];
             stats.append(Character_Stat(ext_id=id,
@@ -97,4 +106,5 @@ def create_character_sqls(locale: str):
     res_sql(resists, language)
     tag_sql(tags, language)
     char_tag_sql(character_tags, language)
-    append_sql_files(scripts=['chara_translation_key','chara_translation', 'tag', 'character', 'character_tag', 'character_stat', 'character_resist'], appended_filename='appended_chara', language=language)
+    char_skill_sql(character_skills, language)
+    append_sql_files(scripts=['chara_translation_key','chara_translation', 'tag', 'character', 'character_tag', 'character_skill', 'character_stat', 'character_resist'], appended_filename='appended_chara', language=language)

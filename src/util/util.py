@@ -14,8 +14,6 @@ def append_sql_files(scripts:list[str], appended_filename: str, language: str):
 def str_format(obj_col):
     if obj_col is None:
         return ''
-    elif isinstance(obj_col, str):
-        return obj_col.replace("'", "\\'")
     return obj_col
 
 def get_attribute_string(attack_attribute):
@@ -43,3 +41,31 @@ def get_role_string(role):
         return 'DEFENDER'
     elif role == 4:
         return 'SUPPORTER'
+    
+def get_skill_type(type):
+    if type == 0:
+        return 'SKILL_1'
+    elif type == 1:
+        return 'SKILL_2'
+    elif type == 2:
+        return 'BURST_SKILL'
+    
+def get_skill_target_type(role):
+    if role == 2:
+        return 'SINGLE_ALLY'
+    elif role == 3:
+        return 'SINGLE_ENEMY'
+    elif role == 4:
+        return 'ALL_ALLY'
+    elif role == 5:
+        return 'ALL_ENEMY'
+    
+def get_skill_effect_type(role):
+    if role == 1:
+        return 'DAMAGE'
+    elif role == 2:
+        return 'RECOVERY'
+    elif role == 3:
+        return 'BUFF'
+    elif role == 4:
+        return 'DEBUFF'

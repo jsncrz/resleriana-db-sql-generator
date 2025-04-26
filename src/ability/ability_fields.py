@@ -3,14 +3,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 from ability.ability import Ability, ability_sql
 from ability.ability_effect import Ability_Effect, ability_effect_sql
-from effect.effect import Effect, effect_sql
 from generic.translation import Translation, tl_sql
 from util.util import append_sql_files, str_format
 
 load_dotenv()
 language = None
 db_filepath = None
-
             
 def __add_ability_effect(ability_id, ability_effects, effect_ids):
     for effect in effect_ids:
