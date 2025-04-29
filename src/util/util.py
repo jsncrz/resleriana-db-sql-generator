@@ -1,3 +1,18 @@
+
+def write_array_to_file(ids: list, file_name: str):
+    string_ids = ",".join(map(str, ids))
+    with open (f'assets/included_{file_name}.txt', mode='w', encoding="utf8") as f:
+        f.write(string_ids)
+    f.close()
+def load_array_from_file(file_name: list[str]):
+    items = []
+    for file in file_name:
+        with open(f'assets/included_{file}.txt', 'r') as file:
+            content = file.read()
+            items = items + content.split(',')
+        file.close()
+    return items
+    
 def append_sql_files(scripts:list[str], appended_filename: str, language: str):
     sql_script = ''
     sql_scripts = scripts

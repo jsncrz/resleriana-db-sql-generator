@@ -110,6 +110,7 @@ CREATE TABLE skill_effect (
     skill_id INT NOT NULL,
     effect_id INT NOT NULL,
     number_value INT NOT NULL,
+	skill_effect_index SMALLINT,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP,
     delete_date TIMESTAMP,

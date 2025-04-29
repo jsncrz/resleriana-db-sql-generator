@@ -20,13 +20,14 @@ args = parser.parse_args()
 if __name__ == "__main__":
     locale = args.locale
     print(args)
+    # The order of these calls are important
     if args.char:
         create_character_sqls(locale)
-    if args.effect:
-        create_effect_sql(locale)
     if args.ability:
         create_ability_sql(locale)
     if args.memory:
-        create_memoria_sqls(locale)
-    if args.memory:
         create_skill_sql(locale)
+    if args.effect:
+        create_effect_sql(locale)
+    if args.memory:
+        create_memoria_sqls(locale)
