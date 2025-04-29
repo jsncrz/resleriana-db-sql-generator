@@ -39,28 +39,20 @@ def __get_linked_skill(hyperlinks, linked_id):
 def __get_hyper_link_json():
     with open(Path(db_filepath + 'hyperlink.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
-        return d
+        return d   
 
-
-    
-
-
-def __add_linked_skills_to_included_skills(included_skills):
-    """Add the linked skills to the list of included skills.
-    
-    This function looks through each skill description and if it finds a hyperlink to a skill, it adds it to the list of included skills.
-    WARNING: This function will loop through every skill in the skill.json file, doubling the need to loop through every skill.
-    Args:
-        included_skills (list): The list of skills to include.
-    """
+def __add_linked_skills_to_included_skills(hyperlinks):
+    linked_skills = []
     with open(Path(db_filepath + 'skill.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
         for obj in d:
             description = obj['description']
             linked_id = re.search(r"\{hyperlink_id (\d+)\}", description)
             if linked_id:
-                included_skills.append(int(linked_id.group(1)))
+                linked_skill = __get_linked_skill(hyperlinks, linked_id.group(1))
+                linked_skills.append(str(linked_skill))
     f.close()
+    return linked_skills
 
 
 def __create_sql_files(translations, skills, skill_effects):
@@ -82,7 +74,8 @@ def create_skill_sql(locale: str):
     skill_effects: list[Skill_Effect] = []
     included_skills = load_array_from_file(['character_skills'])
     included_effects = []
-    __add_linked_skills_to_included_skills(included_skills)
+    included_skills  = included_skills + __add_linked_skills_to_included_skills(hyperlinks)
+    included_skills = list(set(included_skills))
     with open(Path(db_filepath + 'skill.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
         for obj in d:
