@@ -288,3 +288,47 @@ CREATE TABLE memoria_status (
     FOREIGN KEY (speed) REFERENCES memoria_growth_key(id),
     PRIMARY KEY (memoria_id)
 );
+
+
+-- GRANTS --
+GRANT ALL ON TABLE public.ability TO resleriana_admin;
+
+GRANT ALL ON TABLE public.ability_effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public."character" TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_resist TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_skill TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_status TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_tag TO resleriana_admin;
+
+GRANT ALL ON TABLE public.effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_ability TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_attribute TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_growth TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_growth_key TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_role TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_status TO resleriana_admin;
+
+GRANT ALL ON TABLE public.skill TO resleriana_admin;
+
+GRANT ALL ON TABLE public.skill_effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public.tag TO resleriana_admin;
+
+GRANT ALL ON TABLE public.translation_keys TO resleriana_admin;
+
+GRANT ALL ON TABLE public.translations TO resleriana_admin;
+
+
