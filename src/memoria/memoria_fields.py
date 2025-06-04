@@ -9,7 +9,7 @@ from memoria.memoria_attribute import Memoria_Attribute, memoria_attribute_sql
 from memoria.memoria_growth import Memoria_Growth, memoria_growth_sql
 from memoria.memoria_status import Memoria_Status, memoria_status_sql
 from memoria.memoria_role import Memoria_Role, memoria_role_sql
-from util.util import append_sql_files, get_attribute_string, get_role_string, str_format
+from util.util import append_sql_files, get_attribute_string, get_role_string, str_format, write_array_to_file
 
 load_dotenv()
 language = None
@@ -57,6 +57,24 @@ def __add_memoria_status(memoria_id, memoria_status:list, status):
             mental = status_value['growth_id']
     memoria_status.append(Memoria_Status(memoria_id=memoria_id, hp=hp, speed=spd, magic=magic, defense=defense, mental=mental, attack=attack))
 
+def add_memoria_to_array(tl_id_preval, memorias, obj, id, release_date):
+    memorias.append(Memoria(
+                            description=f'{tl_id_preval}_{id}_D',
+                            ext_id=str_format(id),
+                            rarity=obj['rarity'],
+                            release_date=release_date,
+                            name=f'{tl_id_preval}_{id}_N'))
+
+def __create_sql_files(translations, memorias, memoria_abilities, memoria_attributes, memoria_roles, memoria_status, memoria_growth):
+    tl_sql(translations, 'memoria_translation', language)
+    memoria_growth_sql(memoria_growth, language)
+    memoria_sql(memorias, language)
+    memoria_ability_sql(memoria_abilities, language)
+    memoria_attribute_sql(memoria_attributes, language)
+    memoria_role_sql(memoria_roles, language)
+    memoria_status_sql(memoria_status, language)
+    append_sql_files(scripts=['memoria_translation_key','memoria_translation', 'memoria_growth_key','memoria_growth', 'memoria', 'memoria_ability', 'memoria_attribute', 'memoria_status', 'memoria_role'], appended_filename='appended_memoria', language=language)
+
 def create_memoria_sqls(locale: str):
     tl_id_preval = 'MEMORIA'
     global language
@@ -70,6 +88,7 @@ def create_memoria_sqls(locale: str):
     memoria_roles:list[Memoria_Role] = []
     memoria_status:list[Memoria_Status] = []
     memoria_growth:list[Memoria_Growth] = []
+    ability_list: list[int] = []
     __add_memoria_growths(memoria_growth)
     with open(Path(db_filepath + 'memoria.json').absolute(), encoding="utf8") as f:
         d = json.load(f)
@@ -77,23 +96,12 @@ def create_memoria_sqls(locale: str):
             id = obj['id']
             __add_memoria_tls(tl_id_preval, translations, obj, id)
             release_date = datetime.fromisoformat(obj['start_at']) if obj['start_at'] is not None else '2023-09-23 00:00:01'
-            memorias.append(Memoria(
-                            description=f'{tl_id_preval}_{id}_D',
-                            ext_id=str_format(id),
-                            rarity=obj['rarity'],
-                            release_date=release_date,
-                            name=f'{tl_id_preval}_{id}_N'))
-            
+            add_memoria_to_array(tl_id_preval, memorias, obj, id, release_date)
             __add_memoria_abilities(id, memoria_abilities, obj['ability_ids'])
             __add_memoria_attributes(id, memoria_attributes, obj['attack_attributes'])
             __add_memoria_roles(id, memoria_roles, obj['roles'])
             __add_memoria_status(id, memoria_status, obj['status_buffs'])
+            ability_list = ability_list + obj['ability_ids']
     f.close()
-    tl_sql(translations, 'memoria_translation', language)
-    memoria_growth_sql(memoria_growth, language)
-    memoria_sql(memorias, language)
-    memoria_ability_sql(memoria_abilities, language)
-    memoria_attribute_sql(memoria_attributes, language)
-    memoria_role_sql(memoria_roles, language)
-    memoria_status_sql(memoria_status, language)
-    append_sql_files(scripts=['memoria_translation_key','memoria_translation', 'memoria_growth_key','memoria_growth', 'memoria', 'memoria_ability', 'memoria_attribute', 'memoria_status', 'memoria_role'], appended_filename='appended_memoria', language=language)
+    write_array_to_file(ability_list, 'memoria_ability')
+    __create_sql_files(translations, memorias, memoria_abilities, memoria_attributes, memoria_roles, memoria_status, memoria_growth)

@@ -10,6 +10,26 @@ GRANT ALL ON SCHEMA public TO public;
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
 
+CREATE TYPE attack_attribute
+AS
+ENUM('SLASH', 'STRIKE', 'STAB', 'FIRE', 'ICE', 'BOLT', 'AIR');
+
+CREATE TYPE role_type
+AS
+ENUM('ATTACKER', 'BREAKER', 'DEFENDER', 'SUPPORTER');
+
+CREATE TYPE skill_type
+AS
+ENUM('SKILL_1', 'SKILL_2', 'BURST_SKILL');
+
+CREATE TYPE skill_target_type
+AS
+ENUM('SINGLE_ALLY', 'SINGLE_ENEMY', 'ALL_ALLY', 'ALL_ENEMY');
+
+CREATE TYPE skill_effect_type
+AS
+ENUM('DAMAGE', 'RECOVERY', 'BUFF', 'DEBUFF');
+
 CREATE TABLE translation_keys (
     id VARCHAR(50) PRIMARY KEY
 );
@@ -67,6 +87,38 @@ CREATE TABLE ability_effect (
     PRIMARY KEY (ability_id, effect_id)
 );
 
+CREATE TABLE skill (
+    skill_description VARCHAR(50) NOT NULL,
+    skill_name VARCHAR(50) NOT NULL,
+    id INT NOT NULL UNIQUE PRIMARY KEY,
+    skill_power INT NOT NULL,
+    skill_break_power INT NOT NULL,
+    skill_wait INT NOT NULL,
+	skill_attribute ATTACK_ATTRIBUTE,
+	skill_target_type SKILL_TARGET_TYPE,
+	linked_skill INT,
+	skill_effect_type SKILL_EFFECT_TYPE,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+	FOREIGN KEY (linked_skill) REFERENCES skill(id),
+    FOREIGN KEY (skill_name) REFERENCES translation_keys(id),
+    FOREIGN KEY (skill_description) REFERENCES translation_keys(id)
+);
+
+CREATE TABLE skill_effect (
+    skill_id INT NOT NULL,
+    effect_id INT NOT NULL,
+    number_value INT NOT NULL,
+	skill_effect_index SMALLINT,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (skill_id) REFERENCES skill(id),
+    FOREIGN KEY (effect_id) REFERENCES effect(id),
+    PRIMARY KEY (skill_id, effect_id)
+);
+
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
@@ -82,8 +134,8 @@ CREATE TABLE character (
     acquisition_text VARCHAR(50),
     initial_rarity SMALLINT NOT NULL,
     max_rarity SMALLINT NOT NULL,
-    character_role VARCHAR(50),
-    attack_attribute VARCHAR(50),
+    character_role ROLE_TYPE,
+    attack_attribute ATTACK_ATTRIBUTE,
     is_alchemist boolean NOT NULL,
     release_date TIMESTAMP,
     id INT NOT NULL UNIQUE PRIMARY KEY,
@@ -137,6 +189,18 @@ CREATE TABLE character_tag (
     PRIMARY KEY (character_id, tag_id)
 );
 
+CREATE TABLE character_skill (
+    skill_id INT NOT NULL,
+    character_id INT NOT NULL,
+	skill_type SKILL_TYPE NOT NULL,
+    create_date TIMESTAMP NOT NULL,
+    update_date TIMESTAMP,
+    delete_date TIMESTAMP,
+    FOREIGN KEY (character_id) REFERENCES character(id),
+    FOREIGN KEY (skill_id) REFERENCES skill(id),
+    PRIMARY KEY (character_id, skill_id)
+);
+
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------
@@ -186,7 +250,7 @@ CREATE TABLE memoria_ability (
 
 CREATE TABLE memoria_attribute (
     memoria_id INT NOT NULL,
-    memoria_attribute VARCHAR(50) NOT NULL,
+    memoria_attribute ATTACK_ATTRIBUTE NOT NULL,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP,
     delete_date TIMESTAMP,
@@ -196,7 +260,7 @@ CREATE TABLE memoria_attribute (
 
 CREATE TABLE memoria_role (
     memoria_id INT NOT NULL,
-    memoria_role VARCHAR(50) NOT NULL,
+    memoria_role ROLE_TYPE NOT NULL,
     create_date TIMESTAMP NOT NULL,
     update_date TIMESTAMP,
     delete_date TIMESTAMP,
@@ -224,3 +288,47 @@ CREATE TABLE memoria_status (
     FOREIGN KEY (speed) REFERENCES memoria_growth_key(id),
     PRIMARY KEY (memoria_id)
 );
+
+
+-- GRANTS --
+GRANT ALL ON TABLE public.ability TO resleriana_admin;
+
+GRANT ALL ON TABLE public.ability_effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public."character" TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_resist TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_skill TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_status TO resleriana_admin;
+
+GRANT ALL ON TABLE public.character_tag TO resleriana_admin;
+
+GRANT ALL ON TABLE public.effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_ability TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_attribute TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_growth TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_growth_key TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_role TO resleriana_admin;
+
+GRANT ALL ON TABLE public.memoria_status TO resleriana_admin;
+
+GRANT ALL ON TABLE public.skill TO resleriana_admin;
+
+GRANT ALL ON TABLE public.skill_effect TO resleriana_admin;
+
+GRANT ALL ON TABLE public.tag TO resleriana_admin;
+
+GRANT ALL ON TABLE public.translation_keys TO resleriana_admin;
+
+GRANT ALL ON TABLE public.translations TO resleriana_admin;
+
+
